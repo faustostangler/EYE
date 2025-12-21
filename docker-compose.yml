@@ -1,0 +1,78 @@
+services:
+  eye-engine:
+    container_name: eye-engine
+    build:
+      context: .
+      args:
+        INSTALL_DEV: "0"
+    # Em prod-like, nada de bind-mount do código (imagem é o artefato)
+    env_file:
+      - .env
+      - .env.local
+    environment:
+      # A app fala com o serviço de inferência por rede interna
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://inference:11434/v1}
+      LLM_MODEL_NAME: ${LLM_MODEL_NAME:-llama3.1:8b}
+      CHROMA_PERSIST_DIR: ${CHROMA_PERSIST_DIR:-/app/db/chroma}
+    depends_on:
+      inference:
+        condition: service_healthy
+    networks:
+      - internal
+    # Opcional (recomendado): persistir DB local do RAG (Chroma)
+    volumes:
+      - chroma_db:${CHROMA_PERSIST_DIR:-/app/db/chroma}
+    # Prod-like: por padrão não expõe porta no host (mais seguro).
+    # Se quiser expor a API em prod, descomente:
+    # ports:
+    #   - "8000:8000"
+
+  inference:
+    container_name: inference
+    image: ollama/ollama:latest
+    # Recomendo mapear para o seu disco ext4 (como no seu manual):
+    # - /mnt/linux_d/ollama:/root/.ollama
+    # Se você preferir volume nomeado, troque pela linha abaixo:
+    # - ollama_models:/root/.ollama
+    volumes:
+      - /mnt/linux_d/ollama:/root/.ollama
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:11434/api/tags > /dev/null || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+  # Opcional: só ligue se realmente usar o Unstructured no pipeline.
+  # Mantive como "profile" para não subir por padrão.
+  unstructured:
+    container_name: unstructured
+    image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
+    profiles: [ "unstructured" ]
+    environment:
+      - UNSTRUCTURED_API_KEY=${UNSTRUCTURED_API_KEY:-}
+    networks:
+      - internal
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -fsS http://localhost:8000/healthcheck > /dev/null || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  chroma_db:
+    # Se preferir volume nomeado para ollama ao invés de bind no /mnt/linux_d:
+    # ollama_models:
+
+networks:
+  internal:
+    driver: bridge
+    internal: true

@@ -1,0 +1,28 @@
+services:
+  eye-engine:
+    build:
+      context: .
+      args:
+        INSTALL_DEV: "1"
+    image: eye-engine:dev
+    # Dev: bind-mount do código para live-edit
+    volumes:
+      - .:/app
+      # Cache do venv para acelerar rebuilds e evitar reinstalar tudo
+      - venv:/app/.venv
+      # Persistência do Chroma também em dev (se quiser)
+      - chroma_db:${CHROMA_PERSIST_DIR:-/app/db/chroma}
+    # Dev: expõe API no host
+    ports:
+      - "8000:8000"
+      # Debug (se você usar debugpy)
+      - "5678:5678"
+      - "5679:5679"
+    # Dev: se você quiser manter um container “parado” para entrar e rodar comandos:
+    # command: ["sleep", "infinity"]
+    # Ou rodar a API diretamente (recomendado se você já tem main:app):
+    # command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+volumes:
+  venv:
+  chroma_db:
