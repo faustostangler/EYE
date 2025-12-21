@@ -1,0 +1,100 @@
+[project]
+name = "eye"
+version = "0.1.0"
+description = "Enhanced Yardstick Engine (EYE): extração clínica semântica determinística com MCP + RAG."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+authors = [{ name = "Fausto Stangler" }]
+license = { text = "Proprietary" }
+
+# Runtime (container)
+dependencies = [
+  # API / serving
+  "fastapi>=0.110",
+  "uvicorn[standard]>=0.27",
+
+  # Config/HTTP
+  "python-dotenv>=1.0",
+  "requests>=2.31",
+  "httpx>=0.27",
+
+  # Parsing / ingest
+  "beautifulsoup4>=4.12",
+  "lxml>=5.0",
+
+  # Schemas / extraction
+  "pydantic>=2.6",
+  "instructor>=1.6",
+
+  # RAG / orchestration
+  "langchain>=0.2",
+  "langchain-community>=0.2",
+  "langchain-text-splitters>=0.2",
+  "langchain-chroma>=0.1",
+  "langchain-openai>=0.1",
+  "langchain-ollama>=0.1",
+
+  # MCP (Dual-Role Host/Server)
+  "mcp>=1.7",
+  "langchain-mcp-adapters>=0.2.1",
+]
+
+[project.optional-dependencies]
+# Uso local / notebooks (para uma imagem dev)
+notebook = [
+  "jupyterlab>=4.0",
+  "ipykernel>=6.29",
+  "matplotlib>=3.8",
+  "pandas>=2.2",
+  "numpy>=1.26",
+]
+
+# NLP tradicional (se realmente for usar spaCy no pipeline)
+nlp = [
+  "spacy>=3.8",
+  "en-core-web-sm",
+]
+
+# Inferência local fora do Ollama (somente se você decidir manter backend alternativo)
+local-cpp = [
+  "llama-cpp-python>=0.3",
+  "gguf",
+  "tiktoken>=0.6",
+]
+
+# GPU (somente para dev/local; em prod você já está isolando inferência via Ollama container)
+gpu = [
+  "torch",
+]
+
+# Qualidade/CI
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.6",
+  "mypy>=1.10",
+  "debugpy>=1.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["eye_engine"]
+
+# uv: fonte declarativa para modelos spaCy (SSOT do artifact)
+[tool.uv.sources]
+en-core-web-sm = { url = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl" }
+
+# (opcional) lint/typecheck defaults
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_ignores = true
+no_implicit_optional = true
+disallow_untyped_defs = false
