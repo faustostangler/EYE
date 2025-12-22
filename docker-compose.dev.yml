@@ -16,11 +16,15 @@ services:
     # Dev: expõe API no host
     ports:
       - "8000:8000"
+      - "5678:5678"
+    environment:
+      - PYDEVD_DISABLE_FILE_VALIDATION=1
+      - PYTHONUNBUFFERED=1
 
     # Dev: se você quiser manter um container “parado” para entrar e rodar comandos:
     # command: ["sleep", "infinity"]
     # Ou rodar a API diretamente (recomendado se você já tem main:app):
-    command: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload" ]
+    command: [ "python", "-u", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" ]
 
 volumes:
   venv:
