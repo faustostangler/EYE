@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    UV_PROJECT_ENVIRONMENT=/app/.venv \
+    UV_PROJECT_ENVIRONMENT=/venv \
     PYTHONPATH=/app
 
 WORKDIR /app
@@ -30,11 +30,11 @@ USER appuser
 
 # Preferível: pegar uv do container oficial (sem curl|sh)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /home/appuser/.local/bin/uv
-ENV PATH="/app/.venv/bin:/home/appuser/.local/bin:${PATH}"
+ENV PATH="/venv/bin:/home/appuser/.local/bin:${PATH}"
 
 # Maximiza cache: só manifests primeiro
 COPY --chown=appuser:appuser pyproject.toml uv.lock README.md ./
-RUN mkdir -p /app/.venv
+RUN mkdir -p /venv
 
 # -------------------------
 # DEV IMAGE (com extras)

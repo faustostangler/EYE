@@ -107,7 +107,7 @@ def configure_logger() -> None:
         )
 
     # 2) file sink (persistência + auditoria)
-    log_dir = os.getenv("LOG_DIR", "/app/logs")
+    log_dir = os.getenv("LOG_DIR", "logs")
     os.makedirs(log_dir, exist_ok=True)
 
     log_path = os.path.join(log_dir, os.getenv("LOG_FILE", "app.log"))

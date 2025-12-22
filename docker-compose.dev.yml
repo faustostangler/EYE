@@ -10,7 +10,7 @@ services:
     volumes:
       - .:/app
       # Cache do venv para acelerar rebuilds e evitar reinstalar tudo
-      - venv:/app/.venv
+      - venv:/venv
       # Persistência do Chroma também em dev (se quiser)
       - chroma_db:${CHROMA_PERSIST_DIR:-/app/db/chroma}
       - ./logs:/app/logs # <= NOVO: persistência de logs no host
@@ -27,7 +27,7 @@ services:
     # Dev: se você quiser manter um container “parado” para entrar e rodar comandos:
     # command: ["sleep", "infinity"]
     # Ou rodar a API diretamente (recomendado se você já tem main:app):
-    command: [ "python", "-u", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" ]
+    command: [ "/venv/bin/python", "-u", "-m", "debugpy", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000" ]
 
 volumes:
   venv:
