@@ -12,6 +12,7 @@ dependencies = [
   # API / serving
   "fastapi>=0.110",
   "uvicorn[standard]>=0.27",
+  "loguru>=0.7",
 
   # Config/HTTP
   "python-dotenv>=1.0",

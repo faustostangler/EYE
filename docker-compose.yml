@@ -21,6 +21,7 @@ services:
     # Opcional (recomendado): persistir DB local do RAG (Chroma)
     volumes:
       - chroma_db:${CHROMA_PERSIST_DIR:-/app/db/chroma}
+      - logs:/app/logs
     # Prod-like: por padrão não expõe porta no host (mais seguro).
     # Se quiser expor a API em prod, descomente:
     # ports:
@@ -67,6 +68,7 @@ services:
 
 volumes:
   chroma_db:
+  logs:
     # Se preferir volume nomeado para ollama ao invés de bind no /mnt/linux_d:
     # ollama_models:
 

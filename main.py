@@ -1,12 +1,14 @@
 from fastapi import FastAPI
-import sys
+from app.core.logger import logger
+from app.middlewares.request_id import RequestIdMiddleware
 
-print("Hello from main.py (top level)", file=sys.stderr)
-print("Hello from main.py (top level - stdout)", file=sys.stdout)
+logger.info("Hello from main.py (top level)")
+logger.info("Hello from main.py (top level - stdout)")
 
 app = FastAPI()
+app.add_middleware(RequestIdMiddleware)
 
 @app.get("/health")
 def health():
-    print("Health check called!", file=sys.stderr)
+    logger.info("Health check called!")
     return {"status": "ok"}

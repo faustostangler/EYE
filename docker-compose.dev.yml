@@ -13,12 +13,16 @@ services:
       - venv:/app/.venv
       # Persistência do Chroma também em dev (se quiser)
       - chroma_db:${CHROMA_PERSIST_DIR:-/app/db/chroma}
+      - ./logs:/app/logs # <= NOVO: persistência de logs no host
     # Dev: expõe API no host
     ports:
       - "8000:8000"
       - "5678:5678"
     environment:
       - PYDEVD_DISABLE_FILE_VALIDATION=1
+      - DEV_MODE=1
+      - LOG_LEVEL=DEBUG
+      - LOG_FORMAT=pretty
 
     # Dev: se você quiser manter um container “parado” para entrar e rodar comandos:
     # command: ["sleep", "infinity"]
