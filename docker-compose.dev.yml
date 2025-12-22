@@ -1,10 +1,11 @@
 services:
-  eye-engine:
+  inference-api:
     build:
       context: .
       args:
         INSTALL_DEV: "1"
-    image: eye-engine:dev
+      target: dev
+    image: inference-api:dev
     # Dev: bind-mount do código para live-edit
     volumes:
       - .:/app
@@ -15,13 +16,11 @@ services:
     # Dev: expõe API no host
     ports:
       - "8000:8000"
-      # Debug (se você usar debugpy)
-      - "5678:5678"
-      - "5679:5679"
+
     # Dev: se você quiser manter um container “parado” para entrar e rodar comandos:
     # command: ["sleep", "infinity"]
     # Ou rodar a API diretamente (recomendado se você já tem main:app):
-    # command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: [ "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload" ]
 
 volumes:
   venv:

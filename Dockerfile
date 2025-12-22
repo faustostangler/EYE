@@ -40,10 +40,9 @@ RUN mkdir -p /app/.venv
 # DEV IMAGE (com extras)
 # -------------------------
 FROM base AS dev
-ARG INSTALL_DEV=1
-RUN set -eux; \
-    if [ "$INSTALL_DEV" = "1" ]; then \
-    uv sync --frozen --extra dev --extra notebook --extra nlp; \
+ARG INSTALL_DEV=0
+RUN if [ "$INSTALL_DEV" = "1" ]; then \
+    uv sync --frozen --extra dev; \
     else \
     uv sync --frozen --no-dev; \
     fi
