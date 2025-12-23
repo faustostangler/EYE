@@ -25,7 +25,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*
 
 # Usuário não-root
-RUN useradd -m appuser && mkdir -p /app && chown -R appuser:appuser /app
+RUN useradd -m appuser && mkdir -p /app /venv && chown -R appuser:appuser /app /venv
 USER appuser
 
 # Preferível: pegar uv do container oficial (sem curl|sh)
@@ -34,7 +34,7 @@ ENV PATH="/venv/bin:/home/appuser/.local/bin:${PATH}"
 
 # Maximiza cache: só manifests primeiro
 COPY --chown=appuser:appuser pyproject.toml uv.lock README.md ./
-RUN mkdir -p /venv
+
 
 # -------------------------
 # DEV IMAGE (com extras)

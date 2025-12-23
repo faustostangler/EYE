@@ -1,14 +1,21 @@
+import logging
 from fastapi import FastAPI
-from app.core.logger import logger
-from app.middlewares.request_id import RequestIdMiddleware
 
-logger.info("Hello from main.py (top level)")
-logger.info("Hello from main.py (top level - stdout)")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+
+logger = logging.getLogger("eye")
 
 app = FastAPI()
-app.add_middleware(RequestIdMiddleware)
 
 @app.get("/health")
 def health():
-    logger.info("Health check called!")
-    return {"status": "ok"}
+    logger.info("Health check OK")
+    return {"status": "healthy"}
+
+@app.get("/test")
+def test():
+    logger.info("Test OK")
+    return {"status": "tested"}
