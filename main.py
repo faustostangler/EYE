@@ -14,7 +14,8 @@ def test():
     logger.info("Test OK")
     return {"status": "tested"}
 
-@app.post("/ingest")
+# @app.post("/ingest")
+@app.get("/ingest")
 async def trigger_ingestion(background_tasks: BackgroundTasks, force: bool = False):
     """
     Trigger the document ingestion pipeline in the background.

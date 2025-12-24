@@ -63,8 +63,11 @@ def split_documents(documents: List[Document], chunk_size: int = 1000, chunk_ove
             
     return chunks
 
-def create_vector_store(chunks: List[Document], persist_directory: str = "db/chroma_db") -> Chroma:
+def create_vector_store(chunks: List[Document], persist_directory: str = None) -> Chroma:
     """Create and persist ChromaDB vector store"""
+    if persist_directory is None:
+        persist_directory = os.getenv("VECTOR_DB_PATH", "/app/db/chroma")
+
     logger.info("Creating embeddings and storing in ChromaDB...")
     
     if not os.getenv("OPENAI_API_KEY"):
@@ -82,8 +85,10 @@ def create_vector_store(chunks: List[Document], persist_directory: str = "db/chr
     logger.info(f"Vector store created and saved to {persist_directory}")
     return vectorstore
 
-def run_ingestion_pipeline(docs_path: str = "docs", persist_directory: str = "db/chroma_db", force_refresh: bool = False):
+def run_ingestion_pipeline(docs_path: str = "docs", persist_directory: str = None, force_refresh: bool = False):
     """Main ingestion pipeline logic"""
+    if persist_directory is None:
+        persist_directory = os.getenv("VECTOR_DB_PATH", "/app/db/chroma")
     logger.info("=== Starting RAG Document Ingestion Pipeline ===")
     
     # Check if vector store already exists and we are not forcing refresh.

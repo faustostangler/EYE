@@ -1,18 +1,18 @@
 services:
-  eye-api:
+  api:
     build:
       context: .
       args:
         INSTALL_DEV: "1"
       target: dev
-    image: eye-api:dev
+    image: api:dev
     # Dev: bind-mount do código para live-edit
     volumes:
       - .:/app
       # Cache do venv para acelerar rebuilds e evitar reinstalar tudo
       - venv:/venv
       # Persistência do Chroma também em dev (se quiser)
-      - chroma_db:${CHROMA_PERSIST_DIR:-/app/db/chroma}
+      - chroma_db:${VECTOR_DB_PATH:-/app/db/chroma}
       - ./logs:/app/logs # <= NOVO: persistência de logs no host
     # Dev: expõe API no host
     ports:
